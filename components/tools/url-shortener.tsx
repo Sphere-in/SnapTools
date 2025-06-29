@@ -7,30 +7,17 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Copy, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
+import { createShortUrl } from "@/lib/actions"
 
 export function URLShortener() {
   const [url, setUrl] = useState("")
-  const [shortUrl, setShortUrl] = useState("")
+  const [shortUrl, setShortUrl] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const shortenUrl = async () => {
-    if (!url) {
-      toast.error("Please enter a URL")
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      // Simulate API call - in real app, you'd call your shortening service
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      const shortened = `https://short.ly/${Math.random().toString(36).substr(2, 8)}`
-      setShortUrl(shortened)
-      toast.success("URL shortened successfully!")
-    } catch (error) {
-      toast.error("Failed to shorten URL")
-    } finally {
-      setIsLoading(false)
-    }
+  async function handleCreate(formData: FormData) {
+    const originalUrl = formData.get("url") as string
+    const code = await createShortUrl(originalUrl)
+    return `${process.env.NEXT_PUBLIC_BASE_URL}/s/${code}`
   }
 
   const copyToClipboard = async () => {
@@ -44,20 +31,24 @@ export function URLShortener() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4">
+      <form action={async (formData) => {
+        const url = await handleCreate(formData)
+        setShortUrl(url)
+      }} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="url">Enter URL to shorten</Label>
           <Input
             id="url"
+            name="url"
             placeholder="https://example.com/very-long-url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
         </div>
-        <Button onClick={shortenUrl} disabled={isLoading} className="w-full">
+        <Button disabled={isLoading} className="w-full">
           {isLoading ? "Shortening..." : "Shorten URL"}
         </Button>
-      </div>
+      </form>
 
       {shortUrl && (
         <Card>
