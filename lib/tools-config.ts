@@ -10,9 +10,17 @@ import {
   FileText,
   GitCompare,
   Ruler,
-} from "lucide-react"
+  Brain,
+} from "lucide-react";
 
 export const tools = [
+  {
+    id: "snap-ai",
+    name: "Snap AI",
+    description: "Compare two texts and highlight differences",
+    category: "AI Tools",
+    icon: Brain,
+  },
   {
     id: "url-shortener",
     name: "URL Shortener",
@@ -90,4 +98,4 @@ export const tools = [
     category: "Math Tools",
     icon: CalcIcon,
   },
-]
+];

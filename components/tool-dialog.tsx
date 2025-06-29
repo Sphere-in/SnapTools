@@ -15,6 +15,7 @@ import { Base64Tool } from "@/components/tools/base64-tool"
 import { HashGenerator } from "@/components/tools/hash-generator"
 import { TextDiff } from "@/components/tools/text-diff"
 import { Calculator } from "@/components/tools/calculator"
+import SnapAI from "./tools/snap-ai"
 
 interface ToolDialogProps {
   toolId: string | null
@@ -33,6 +34,7 @@ const toolComponents: Record<string, React.ComponentType> = {
   "hash-generator": HashGenerator,
   "text-diff": TextDiff,
   calculator: Calculator,
+  "snap-ai": SnapAI
 }
 
 export function ToolDialog({ toolId, onClose }: ToolDialogProps) {
