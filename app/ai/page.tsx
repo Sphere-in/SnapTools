@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { useTheme } from "next-themes"
+import useDebounce from "@/hooks/useDebounce"
 import {
   Sun,
   Moon,
@@ -103,6 +104,9 @@ export default function IntroPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { theme, setTheme } = useTheme()
 
+  // Apply debounce to the custom input with 300ms delay
+  const debouncedCustomInput = useDebounce(customInput, 300)
+
   const handleCardClick = (card: QuickStartCard) => {
     setSelectedCard(card)
     setCustomInput("")
@@ -110,8 +114,8 @@ export default function IntroPage() {
   }
 
   const handleStartChat = () => {
-    if (selectedCard && customInput.trim()) {
-      const message = `${selectedCard.prompt} ${customInput.trim()}`
+    if (selectedCard && debouncedCustomInput.trim()) {
+      const message = `${selectedCard.prompt} ${debouncedCustomInput.trim()}`
       setInitialMessage(message)
       setShowChat(true)
       setIsDialogOpen(false)
@@ -156,7 +160,6 @@ export default function IntroPage() {
             <p className="text-sm text-muted-foreground">Powered by Gemini AI</p>
           </div>
         </div>
-
         <Button
           variant="ghost"
           size="icon"
@@ -180,7 +183,6 @@ export default function IntroPage() {
               Experience next-generation AI conversation. Choose your journey and start exploring the possibilities.
             </p>
           </div>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               onClick={handleQuickStart}
@@ -207,7 +209,6 @@ export default function IntroPage() {
               Select a category to get started with tailored prompts and suggestions
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quickStartCards.map((card, index) => (
               <Card
@@ -224,7 +225,6 @@ export default function IntroPage() {
                       card.gradient,
                     )}
                   />
-
                   {/* Category Badge */}
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="text-xs font-medium">
@@ -236,7 +236,6 @@ export default function IntroPage() {
                       ))}
                     </div>
                   </div>
-
                   {/* Icon */}
                   <div
                     className={cn(
@@ -246,13 +245,11 @@ export default function IntroPage() {
                   >
                     {card.icon}
                   </div>
-
                   {/* Content */}
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">{card.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">{card.description}</p>
                   </div>
-
                   {/* Action */}
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-xs text-muted-foreground">Click to start</span>
@@ -269,7 +266,6 @@ export default function IntroPage() {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
             Why Choose Our AI Assistant?
           </h2>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -326,7 +322,6 @@ export default function IntroPage() {
               </div>
             </DialogTitle>
           </DialogHeader>
-
           <div className="space-y-4 pt-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">What would you like to explore?</label>
@@ -343,14 +338,13 @@ export default function IntroPage() {
                 }}
               />
             </div>
-
             <div className="flex gap-3">
               <Button onClick={() => setIsDialogOpen(false)} variant="outline" className="flex-1 rounded-xl">
                 Cancel
               </Button>
               <Button
                 onClick={handleStartChat}
-                disabled={!customInput.trim()}
+                disabled={!debouncedCustomInput.trim()}
                 className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl"
               >
                 <Send className="mr-2 h-4 w-4" />

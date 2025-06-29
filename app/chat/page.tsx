@@ -1,13 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Send, ArrowLeft, Sun, Moon, Sparkles, User, Bot, RotateCcw } from "lucide-react"
 import { useTheme } from "next-themes"
+import useDebounce from "@/hooks/useDebounce"
 import { cn } from "@/lib/utils"
 
 interface Message {
@@ -28,24 +29,33 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
   const { theme, setTheme } = useTheme()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const initialMessageProcessed = useRef(false)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+  const handleSendMessage = useCallback(
+    async (messageContent?: string) => {
+      const content = messageContent || input
+      if (!content.trim()) return
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages, isTyping])
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        content: content,
+        role: "user",
+        timestamp: new Date(),
+      }
 
-  useEffect(() => {
-    if (initialMessage) {
-      handleSendMessage(initialMessage)
-    }
-  }, [initialMessage])
+      setMessages((prev) => [...prev, userMessage])
+      if (!messageContent) {
+        setInput("")
+      }
+
+      // Simulate AI response
+      await simulateAIResponse(content)
+    },
+    [input],
+  )
 
   const simulateAIResponse = async (userMessage: string) => {
     setIsTyping(true)
-
     // Simulate AI thinking time
     await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000))
 
@@ -76,23 +86,39 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
     setIsTyping(false)
   }
 
-  const handleSendMessage = async (messageContent?: string) => {
-    const content = messageContent || input
-    if (!content.trim()) return
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: content,
-      role: "user",
-      timestamp: new Date(),
-    }
-
-    setMessages((prev) => [...prev, userMessage])
-    if (!messageContent) setInput("")
-
-    // Simulate AI response
-    await simulateAIResponse(content)
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, isTyping])
+
+  useEffect(() => {
+    if (initialMessage && !initialMessageProcessed.current) {
+      initialMessageProcessed.current = true
+      handleSendMessage(initialMessage)
+    }
+  }, [initialMessage])
+
+  // Example usage of debounced input for auto-saving drafts
+  const debouncedInput = useDebounce(input, 500)
+
+  useEffect(() => {
+    if (debouncedInput.trim() && debouncedInput !== input) {
+      // Auto-save draft logic could go here
+      console.log("Auto-saving draft:", debouncedInput)
+    }
+  }, [debouncedInput])
+
+  // Example usage for input validation or processing
+  useEffect(() => {
+    if (debouncedInput.trim()) {
+      // Perform any expensive input processing here
+      // For example: spell check, content analysis, etc.
+      console.log("Processing input:", debouncedInput)
+    }
+  }, [debouncedInput])
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -103,6 +129,8 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
 
   const handleNewChat = () => {
     setMessages([])
+    setInput("")
+    initialMessageProcessed.current = false
     inputRef.current?.focus()
   }
 
@@ -134,7 +162,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
           {message.role === "user" ? <User className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
         </AvatarFallback>
       </Avatar>
-
       <div
         className={cn(
           "flex-1 space-y-3 max-w-[85%] lg:max-w-[75%]",
@@ -152,7 +179,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
           </span>
           <span className="text-xs text-muted-foreground/70 font-medium">{message.timestamp.toLocaleTimeString()}</span>
         </div>
-
         <div
           className={cn(
             "relative p-5 rounded-2xl backdrop-blur-sm border transition-all duration-300 group-hover:shadow-lg",
@@ -162,7 +188,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
           )}
         >
           <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{message.content}</div>
-
           {/* Decorative gradient border */}
           <div
             className={cn(
@@ -184,7 +209,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
           <Bot className="h-6 w-6" />
         </AvatarFallback>
       </Avatar>
-
       <div className="flex-1 space-y-3 max-w-[85%] lg:max-w-[75%]">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -192,7 +216,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
           </span>
           <span className="text-xs text-muted-foreground/70 font-medium">thinking...</span>
         </div>
-
         <div className="relative p-5 rounded-2xl backdrop-blur-sm border bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20 shadow-purple-500/10">
           <div className="flex items-center gap-3">
             <div className="flex gap-1">
@@ -240,7 +263,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-
             <div className="flex items-center gap-3">
               <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/25">
                 <Sparkles className="h-6 w-6 text-white" />
@@ -254,7 +276,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
               </div>
             </div>
           </div>
-
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -287,7 +308,6 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
                   </div>
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 blur-xl opacity-50 -z-10" />
                 </div>
-
                 <div className="space-y-4 max-w-2xl">
                   <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 bg-clip-text text-transparent">
                     Ready to Chat!
@@ -323,6 +343,10 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
                   className="pr-4 min-h-[56px] text-base rounded-2xl border-2 border-border/50 bg-background/50 backdrop-blur-sm focus:border-primary/50 focus:bg-background/80 transition-all duration-300 shadow-lg"
                   disabled={isTyping}
                 />
+                {/* Optional: Show draft indicator when there's debounced content */}
+                {debouncedInput.trim() && debouncedInput !== input && (
+                  <div className="absolute -top-6 left-2 text-xs text-muted-foreground/70">Draft saved</div>
+                )}
               </div>
               <Button
                 onClick={() => handleSendMessage()}
