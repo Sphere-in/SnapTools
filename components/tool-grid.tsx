@@ -1,23 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { tools } from "@/lib/tools-config"
 import { ToolDialog } from "@/components/tool-dialog"
+import useDebounce from "@/hooks/useDebounce"
 
 export function ToolGrid() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
 
-  const filteredTools = tools.filter(
-    (tool) =>
-      tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tool.category.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
+
+  const filteredTools = useMemo(() => {
+    return tools.filter(
+      (tool) =>
+        tool.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        tool.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        tool.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    )
+  }, [debouncedSearchTerm])
 
   const categories = Array.from(new Set(tools.map((tool) => tool.category)))
 

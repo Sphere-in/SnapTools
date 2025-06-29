@@ -8,11 +8,11 @@ import { Toaster } from "sonner"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Multi-Tool Suite - Essential Tools for Everyone",
+  title: "Snap Tools - Essential Tools for Everyone",
   description:
     "A comprehensive collection of essential tools for developers, students, and professionals. Clean, fast, and always available.",
   keywords: "tools, utilities, developer tools, QR code, URL shortener, calculator, JSON formatter",
-    generator: 'v0.dev'
+  generator: 'Web Crafters'
 }
 
 export default function RootLayout({
