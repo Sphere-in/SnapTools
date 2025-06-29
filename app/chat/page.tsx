@@ -299,8 +299,8 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
               </div>
             ) : (
               <div className="space-y-2">
-                {messages.map((message) => (
-                  <MessageBubble key={message.id} message={message} />
+                {messages.map((message, index) => (
+                  <MessageBubble key={index} message={message} />
                 ))}
                 {isTyping && <TypingIndicator />}
               </div>
