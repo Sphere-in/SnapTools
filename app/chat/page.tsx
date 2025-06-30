@@ -8,83 +8,25 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Send, ArrowLeft, Sun, Moon, Sparkles, User, Bot, RotateCcw } from "lucide-react"
 import { useTheme } from "next-themes"
-import useDebounce from "@/hooks/useDebounce"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 interface Message {
   id: string
   content: string
   role: "user" | "assistant"
   timestamp: Date
+  isTyping?: boolean
 }
 
-interface ChatPageProps {
-  initialMessage?: string
-}
-
-export default function ChatPage({ initialMessage }: ChatPageProps) {
+export default function ChatPage() {
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const { theme, setTheme } = useTheme()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const initialMessageProcessed = useRef(false)
-
-  const handleSendMessage = useCallback(
-    async (messageContent?: string) => {
-      const content = messageContent || input
-      if (!content.trim()) return
-
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        content: content,
-        role: "user",
-        timestamp: new Date(),
-      }
-
-      setMessages((prev) => [...prev, userMessage])
-      if (!messageContent) {
-        setInput("")
-      }
-
-      // Simulate AI response
-      await simulateAIResponse(content)
-    },
-    [input],
-  )
-
-  const simulateAIResponse = async (userMessage: string) => {
-    setIsTyping(true)
-    // Simulate AI thinking time
-    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000))
-
-    const responses = [
-      "I understand your question. Let me help you with that.",
-      "That's an interesting point. Here's what I think about it...",
-      "I'd be happy to assist you with this. Based on what you've asked...",
-      "Great question! Let me break this down for you.",
-      "I can help you with that. Here's a comprehensive answer...",
-      "Excellent! Let me provide you with detailed information about this topic.",
-      "That's a fascinating subject. Here's my analysis...",
-    ]
-
-    const response = responses[Math.floor(Math.random() * responses.length)]
-    const elaboration =
-      " " +
-      userMessage.split(" ").slice(-3).join(" ") +
-      " is indeed a complex topic that requires careful consideration. Let me explain the key aspects and provide you with actionable insights."
-
-    const aiMessage: Message = {
-      id: Date.now().toString() + "-ai",
-      content: response + elaboration,
-      role: "assistant",
-      timestamp: new Date(),
-    }
-
-    setMessages((prev) => [...prev, aiMessage])
-    setIsTyping(false)
-  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -92,33 +34,88 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages, isTyping])
+  }, [messages])
 
-  useEffect(() => {
-    if (initialMessage && !initialMessageProcessed.current) {
-      initialMessageProcessed.current = true
-      handleSendMessage(initialMessage)
+  const handleSendMessage = useCallback(async () => {
+    if (!input.trim() || isTyping) return
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: input.trim(),
+      role: "user",
+      timestamp: new Date(),
     }
-  }, [initialMessage])
 
-  // Example usage of debounced input for auto-saving drafts
-  const debouncedInput = useDebounce(input, 500)
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
+    await getAIResponse(input.trim())
+  }, [input, isTyping])
 
-  useEffect(() => {
-    if (debouncedInput.trim() && debouncedInput !== input) {
-      // Auto-save draft logic could go here
-      console.log("Auto-saving draft:", debouncedInput)
+  const getAIResponse = async (userMessage: string) => {
+    setIsTyping(true)
+
+    // Create placeholder message for typing animation
+    const aiMessageId = Date.now().toString() + "-ai"
+    const aiMessage: Message = {
+      id: aiMessageId,
+      content: "",
+      role: "assistant",
+      timestamp: new Date(),
+      isTyping: true,
     }
-  }, [debouncedInput])
 
-  // Example usage for input validation or processing
-  useEffect(() => {
-    if (debouncedInput.trim()) {
-      // Perform any expensive input processing here
-      // For example: spell check, content analysis, etc.
-      console.log("Processing input:", debouncedInput)
+    setMessages((prev) => [...prev, aiMessage])
+
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: userMessage,
+                  },
+                ],
+              },
+            ],
+          }),
+        },
+      )
+
+      const data = await res.json()
+      const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response."
+
+      await animateTyping(aiMessageId, responseText)
+    } catch (error) {
+      console.error("Error getting AI response:", error)
+      await animateTyping(aiMessageId, "Sorry, there was an error processing your request.")
     }
-  }, [debouncedInput])
+
+    setIsTyping(false)
+  }
+
+  const animateTyping = async (messageId: string, fullText: string) => {
+    const words = fullText.split(" ")
+    let currentText = ""
+
+    for (let i = 0; i < words.length; i++) {
+      currentText += (i > 0 ? " " : "") + words[i]
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, content: currentText, isTyping: i < words.length - 1 } : msg,
+        ),
+      )
+
+      await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 30))
+    }
+  }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -130,109 +127,61 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
   const handleNewChat = () => {
     setMessages([])
     setInput("")
-    initialMessageProcessed.current = false
     inputRef.current?.focus()
   }
 
   const goBack = () => {
-    window.location.reload()
+    router.push("/ai")
   }
 
   const MessageBubble = ({ message }: { message: Message }) => (
     <div
       className={cn(
-        "flex gap-4 p-6 group transition-all duration-500 hover:bg-accent/20 animate-fade-in",
+        "flex gap-4 p-6 group transition-all duration-300 hover:bg-accent/20",
         message.role === "user" ? "flex-row-reverse" : "flex-row",
       )}
     >
       <Avatar
         className={cn(
-          "h-12 w-12 flex-shrink-0 ring-2 ring-offset-2 ring-offset-background transition-all duration-300",
-          message.role === "user" ? "ring-blue-500/50 hover:ring-blue-500" : "ring-purple-500/50 hover:ring-purple-500",
+          "h-10 w-10 flex-shrink-0 ring-2 ring-offset-2 ring-offset-background",
+          message.role === "user" ? "ring-blue-500/30" : "ring-purple-500/30",
         )}
       >
         <AvatarFallback
           className={cn(
-            "transition-all duration-300",
             message.role === "user"
-              ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
-              : "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white shadow-lg shadow-purple-500/25",
+              ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
+              : "bg-gradient-to-br from-purple-500 to-pink-500 text-white",
           )}
         >
-          {message.role === "user" ? <User className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
+          {message.role === "user" ? <User className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
         </AvatarFallback>
       </Avatar>
-      <div
-        className={cn(
-          "flex-1 space-y-3 max-w-[85%] lg:max-w-[75%]",
-          message.role === "user" ? "items-end" : "items-start",
-        )}
-      >
-        <div className={cn("flex items-center gap-3", message.role === "user" ? "flex-row-reverse" : "flex-row")}>
+
+      <div className={cn("flex-1 space-y-2 max-w-[80%]", message.role === "user" ? "items-end" : "items-start")}>
+        <div className={cn("flex items-center gap-2", message.role === "user" ? "flex-row-reverse" : "flex-row")}>
           <span
             className={cn(
-              "text-sm font-semibold bg-gradient-to-r bg-clip-text text-transparent",
-              message.role === "user" ? "from-blue-500 to-cyan-500" : "from-purple-500 to-pink-500",
+              "text-sm font-medium",
+              message.role === "user" ? "text-blue-600 dark:text-blue-400" : "text-purple-600 dark:text-purple-400",
             )}
           >
-            {message.role === "user" ? "You" : "AI Assistant"}
+            {message.role === "user" ? "You" : "Snap AI"}
           </span>
-          <span className="text-xs text-muted-foreground/70 font-medium">{message.timestamp.toLocaleTimeString()}</span>
+          <span className="text-xs text-muted-foreground">{message.timestamp.toLocaleTimeString()}</span>
         </div>
+
         <div
           className={cn(
-            "relative p-5 rounded-2xl backdrop-blur-sm border transition-all duration-300 group-hover:shadow-lg",
+            "relative p-4 rounded-2xl border transition-all duration-200",
             message.role === "user"
-              ? "bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20 text-foreground shadow-blue-500/10 ml-auto"
-              : "bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20 text-foreground shadow-purple-500/10",
+              ? "bg-blue-500/10 border-blue-500/20 ml-auto"
+              : "bg-purple-500/5 border-purple-500/20",
           )}
         >
-          <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{message.content}</div>
-          {/* Decorative gradient border */}
-          <div
-            className={cn(
-              "absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none",
-              message.role === "user"
-                ? "bg-gradient-to-br from-blue-500/20 to-cyan-500/20"
-                : "bg-gradient-to-br from-purple-500/20 to-pink-500/20",
-            )}
-          />
-        </div>
-      </div>
-    </div>
-  )
-
-  const TypingIndicator = () => (
-    <div className="flex gap-4 p-6 animate-fade-in">
-      <Avatar className="h-12 w-12 flex-shrink-0 ring-2 ring-purple-500/50 ring-offset-2 ring-offset-background">
-        <AvatarFallback className="bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white shadow-lg shadow-purple-500/25">
-          <Bot className="h-6 w-6" />
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex-1 space-y-3 max-w-[85%] lg:max-w-[75%]">
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-            AI Assistant
-          </span>
-          <span className="text-xs text-muted-foreground/70 font-medium">thinking...</span>
-        </div>
-        <div className="relative p-5 rounded-2xl backdrop-blur-sm border bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20 shadow-purple-500/10">
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1">
-              <div
-                className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce"
-                style={{ animationDelay: "0ms" }}
-              />
-              <div
-                className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce"
-                style={{ animationDelay: "150ms" }}
-              />
-              <div
-                className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce"
-                style={{ animationDelay: "300ms" }}
-              />
-            </div>
-            <span className="text-xs text-muted-foreground ml-2">Generating response...</span>
+          <div className="text-sm leading-relaxed whitespace-pre-wrap">
+            {message.content}
+            {message.isTyping && <span className="inline-block w-2 h-5 bg-current ml-1 animate-pulse" />}
           </div>
         </div>
       </div>
@@ -240,56 +189,34 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
   )
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-background via-background to-accent/20 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse" />
-        <div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        />
-      </div>
-
-      {/* Main Chat Area - Full Width */}
-      <div className="flex-1 flex flex-col relative z-10">
-        {/* Enhanced Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={goBack}
-              className="hover:bg-accent/50 transition-colors rounded-xl"
-            >
+    <div className="flex h-screen bg-background">
+      {/* Header */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={goBack} className="hover:bg-accent">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-3">
-              <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/25">
-                <Sparkles className="h-6 w-6 text-white" />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-400 to-pink-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  AI Assistant
-                </h1>
-                <p className="text-sm text-muted-foreground font-medium">Powered by Gemini AI</p>
+                <h1 className="text-lg font-semibold">Snap AI</h1>
+                <p className="text-sm text-muted-foreground">Powered by Gemini</p>
               </div>
             </div>
           </div>
+
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleNewChat}
-              className="hover:bg-accent/50 transition-colors rounded-xl"
-            >
+            <Button variant="ghost" size="icon" onClick={handleNewChat} className="hover:bg-accent">
               <RotateCcw className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-xl hover:bg-accent/50 transition-all duration-300 hover:scale-105"
+              className="hover:bg-accent"
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -298,67 +225,57 @@ export default function ChatPage({ initialMessage }: ChatPageProps) {
         </div>
 
         {/* Messages Area */}
-        <ScrollArea className="flex-1 relative">
-          <div className="max-w-5xl mx-auto">
+        <ScrollArea className="flex-1">
+          <div className="max-w-4xl mx-auto">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full min-h-[500px] text-center space-y-8 p-8">
-                <div className="relative">
-                  <div className="p-6 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-2xl shadow-purple-500/25">
-                    <Sparkles className="h-12 w-12 text-white" />
-                  </div>
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 blur-xl opacity-50 -z-10" />
+              <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center space-y-6 p-8">
+                <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500">
+                  <Sparkles className="h-8 w-8 text-white" />
                 </div>
-                <div className="space-y-4 max-w-2xl">
-                  <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 bg-clip-text text-transparent">
-                    Ready to Chat!
-                  </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold">Ready to Chat!</h2>
+                  <p className="text-muted-foreground">
                     Start your conversation below. I'm here to help with anything you need!
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                {messages.map((message, index) => (
-                  <MessageBubble key={index} message={message} />
+              <div>
+                {messages.map((message) => (
+                  <MessageBubble key={message.id} message={message} />
                 ))}
-                {isTyping && <TypingIndicator />}
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
 
-        {/* Enhanced Input Area */}
-        <div className="p-6 border-t border-border/50 bg-background/80 backdrop-blur-xl">
+        {/* Input Area */}
+        <div className="p-4 border-t">
           <div className="max-w-4xl mx-auto">
-            <div className="flex gap-4 items-end">
-              <div className="flex-1 relative">
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
                 <Input
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your message..."
-                  className="pr-4 min-h-[56px] text-base rounded-2xl border-2 border-border/50 bg-background/50 backdrop-blur-sm focus:border-primary/50 focus:bg-background/80 transition-all duration-300 shadow-lg"
+                  className="min-h-[48px] rounded-xl"
                   disabled={isTyping}
                 />
-                {/* Optional: Show draft indicator when there's debounced content */}
-                {debouncedInput.trim() && debouncedInput !== input && (
-                  <div className="absolute -top-6 left-2 text-xs text-muted-foreground/70">Draft saved</div>
-                )}
               </div>
               <Button
-                onClick={() => handleSendMessage()}
+                onClick={handleSendMessage}
                 disabled={!input.trim() || isTyping}
                 size="icon"
-                className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/25 disabled:opacity-50 disabled:hover:scale-100"
+                className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
               >
                 <Send className="h-5 w-5" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground/70 mt-3 text-center font-medium">
-              AI Assistant can make mistakes. Consider checking important information.
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              AI can make mistakes. Consider checking important information.
             </p>
           </div>
         </div>

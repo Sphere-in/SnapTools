@@ -8,8 +8,10 @@ import { Search } from "lucide-react"
 import { tools } from "@/lib/tools-config"
 import { ToolDialog } from "@/components/tool-dialog"
 import useDebounce from "@/hooks/useDebounce"
+import { useRouter } from "next/navigation"
 
 export function ToolGrid() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
 
@@ -50,7 +52,13 @@ export function ToolGrid() {
                 <Card
                   key={tool.id}
                   className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
-                  onClick={() => setSelectedTool(tool.id)}
+                  onClick={() => {
+                    if (tool.id === "snap-ai") {
+                      router.push("/ai");
+                    } else {
+                      setSelectedTool(tool.id)
+                    }
+                  }}
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
