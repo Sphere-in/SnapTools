@@ -20,10 +20,10 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  
+
   return (
     <header className="fixed w-full top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-      <div className="container mx-auto px-4">
+      <div className=" x-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
           <motion.div
@@ -44,23 +44,22 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-  {navItems.map((item) => {
-    const isActive = pathname === item.path
-    return (
-      <button
-        key={item.name}
-        onClick={() => router.push(item.path)}
-        className={`text-sm font-medium transition-colors duration-200 pb-1 border-b-2 ${
-          isActive
-            ? "text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400"
-            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 border-transparent hover:border-gray-300 dark:hover:border-gray-600"
-        }`}
-      >
-        {item.name}
-      </button>
-    )
-  })}
-</nav>
+            {navItems.map((item) => {
+              const isActive = pathname === item.path
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => router.push(item.path)}
+                  className={`text-sm font-medium transition-colors duration-200 pb-1 border-b-2 ${isActive
+                    ? "text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400"
+                    : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 border-transparent hover:border-gray-300 dark:hover:border-gray-600"
+                    }`}
+                >
+                  {item.name}
+                </button>
+              )
+            })}
+          </nav>
 
 
           {/* Search Bar */}
@@ -93,20 +92,6 @@ export function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="lg:hidden">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </Button>
-
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-              <Grid3X3 className="h-5 w-5" />
-            </Button>
 
             <Button
               variant="ghost"
@@ -117,10 +102,6 @@ export function Header() {
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             </Button>
-
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center cursor-pointer hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg">
-              <span className="text-white text-sm font-medium">U</span>
-            </div>
 
             {/* Mobile Menu Button */}
             <Button
@@ -143,26 +124,25 @@ export function Header() {
             className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4"
           >
             <nav className="flex flex-col space-y-4">
-  {navItems.map((item) => {
-    const isActive = pathname === item.path
-    return (
-      <button
-        key={item.name}
-        onClick={() => {
-          setMobileMenuOpen(false)
-          router.push(item.path)
-        }}
-        className={`text-left text-sm font-medium transition-colors duration-200 ${
-          isActive
-            ? "text-blue-600 dark:text-blue-400"
-            : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-        }`}
-      >
-        {item.name}
-      </button>
-    )
-  })}
-</nav>
+              {navItems.map((item) => {
+                const isActive = pathname === item.path
+                return (
+                  <button
+                    key={item.name}
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      router.push(item.path)
+                    }}
+                    className={`text-left text-sm font-medium transition-colors duration-200 ${isActive
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                      }`}
+                  >
+                    {item.name}
+                  </button>
+                )
+              })}
+            </nav>
 
           </motion.div>
         )}

@@ -9,6 +9,7 @@ import { tools } from "@/lib/tools-config"
 import { ToolDialog } from "@/components/tool-dialog"
 import useDebounce from "@/hooks/useDebounce"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 
 interface ToolGridProps {
   filter?: string
@@ -156,16 +157,11 @@ const PatternBackground = ({ category, className }: { category: string; classNam
 }
 
 export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
-  const [mounted, setMounted] = useState(false)
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState(selectedCategory || "all")
-
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const filteredTools = useMemo(() => {
     let filtered = tools
@@ -283,7 +279,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-wrap gap-3 justify-center"
+          className="w-full overflow-x-auto scrollbar-hide p-2 flex xl:justify-center gap-3"
         >
           {categories.map((category) => (
             <motion.button
@@ -291,16 +287,17 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
               onClick={() => handleCategoryChange(category)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm ${
-                activeCategory === category
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 dark:from-emerald-600 dark:to-teal-600 text-white shadow-lg shadow-blue-500/25 dark:shadow-emerald-500/25"
-                  : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80 border border-white/20"
-              }`}
+              className={`whitespace-nowrap px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm ${activeCategory === category
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 dark:from-emerald-600 dark:to-teal-600 text-white shadow-lg shadow-blue-500/25 dark:shadow-emerald-500/25"
+                : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80 border border-white/20"
+                }`}
             >
               {category === "all" ? "All Categories" : category}
             </motion.button>
           ))}
         </motion.div>
+
+
       </div>
 
       {/* Tools Grid */}
@@ -311,22 +308,22 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 relative z-10">
           {filteredTools.map((tool, toolIndex) => (
-            <motion.div 
-            key={tool.id}
-            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{
-              delay: toolIndex * 0.05,
-              type: "tween",
-              duration: 0.3,
-              ease: "easeOut",
-            }}
-            whileHover={{
-              y: -6,
-              transition: { type: "tween", duration: 0.2, ease: "easeOut" },
-            }}
-            className="group"
+            <motion.div
+              key={tool.id}
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                delay: toolIndex * 0.05,
+                type: "tween",
+                duration: 0.3,
+                ease: "easeOut",
+              }}
+              whileHover={{
+                y: -6,
+                transition: { type: "tween", duration: 0.2, ease: "easeOut" },
+              }}
+              className="group"
             >
               <Card
                 className={`cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-emerald-400/20 border-0 rounded-3xl overflow-hidden bg-gradient-to-br ${getCategoryGradient(tool.category)} backdrop-blur-sm relative`}
