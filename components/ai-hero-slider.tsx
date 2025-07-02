@@ -84,7 +84,7 @@ export function AIHeroSlider() {
   }
 
   return (
-    <div className="w-full h-[100svh] flex ">
+    <div className="w-full h-[100svh] flex">
       <div className="relative w-full overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[700px]">
         <AnimatePresence mode="wait">
           <motion.div
@@ -249,7 +249,7 @@ export function AIHeroSlider() {
         </AnimatePresence>
 
         {/* Navigation Controls - Fixed positioning with higher z-index */}
-        <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+        <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20">
           <div className="flex items-center gap-2 bg-black/20 backdrop-blur-md rounded-full p-2">
             <Button
               variant="ghost"
@@ -293,7 +293,7 @@ export function AIHeroSlider() {
         </div>
 
         {/* Slide Counter */}
-        <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 z-50">
+        <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 z-20">
           <div className="bg-black/20 backdrop-blur-md rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
             <span className="text-white/80 text-xs sm:text-sm font-medium">
               {currentSlide + 1} / {featuredTools.length}

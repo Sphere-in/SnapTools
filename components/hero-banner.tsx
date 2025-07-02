@@ -60,7 +60,7 @@ export function HeroBanner() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto px-4 py-8">
       <motion.div
         key={currentBanner}
         initial={{ opacity: 0, y: 20 }}
@@ -131,7 +131,7 @@ export function HeroBanner() {
         </div>
 
         {/* Navigation Controls */}
-        <div className="absolute bottom-6 right-6 flex items-center gap-2">
+        <div className=" absolute bottom-6 right-6 flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"

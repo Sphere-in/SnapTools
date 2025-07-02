@@ -23,7 +23,7 @@ export function Header() {
 
   return (
     <header className="fixed w-full top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-      <div className=" x-auto px-4">
+      <div className="mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
           <motion.div
@@ -32,9 +32,6 @@ export function Header() {
             className="flex items-center space-x-3"
           >
             <div className="flex items-center space-x-2">
-              {/* <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-sm">AI</span>
-              </div> */}
               <Image
                 src="/logo.png"
                 alt="Snap Tools Logo"
@@ -42,9 +39,8 @@ export function Header() {
                 height={32}
                 className="w-8 h-8 "
               />
-                <span className="font-bold text-gray-900 dark:text-white text-lg">Snap Tools</span>
-                <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">AI Powered</div>
-              </div>
+              <span className="font-bold text-gray-900 dark:text-white text-lg">Snap Tools</span>
+            </div>
           </motion.div>
 
           {/* Navigation */}

@@ -384,7 +384,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
                     {tool.name}
                   </CardTitle>
 
-                  <CardDescription className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap leading-relaxed mb-6">
+                  <CardDescription className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
                     {tool.description}
                   </CardDescription>
 

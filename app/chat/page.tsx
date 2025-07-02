@@ -111,7 +111,7 @@ export default function ChatPage() {
           msg.id === messageId ? { ...msg, content: currentText, isTyping: i < words.length - 1 } : msg,
         ),
       )
-      await new Promise((resolve) => setTimeout(resolve, 5))
+      await new Promise((resolve) => setTimeout(resolve, 30))
     }
   }
 
@@ -242,13 +242,13 @@ export default function ChatPage() {
       )}
     >
       <div className={cn("flex-1 space-y-2 max-w-[80%]", message.role === "user" ? "items-end" : "items-start")}>
-        <div className={cn("flex items-center justify-between gap-2", message.role === "user" ? "flex-row-reverse" : "flex-row")}>
-          <div>
-            <span className={cn("text-sm  font-medium", message.role === "user" ? "text-blue-600 dark:text-blue-400" : "text-purple-600 dark:text-purple-400")}>
-              {message.role === "user" ? "You" : "Snap AI"}
-            </span>
-            <span className="text-xs text-muted-foreground">{message.timestamp.toLocaleTimeString()}</span>
-          </div>
+        <div className={cn("flex items-center gap-2", message.role === "user" ? "flex-row-reverse" : "flex-row")}>
+          <span className={cn("text-sm  font-medium", message.role === "user" ? "text-blue-600 dark:text-blue-400" : "text-purple-600 dark:text-purple-400")}>
+            {message.role === "user" ? "You" : "Snap AI"}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
 
         </div>
         <div className={cn("relative py-2.5 px-6 rounded-3xl w-fit  transition-all duration-200 border-transparent", message.role === "user" ? "bg-muted/35  ml-auto" : "bg-purple-500/5 ")}>
