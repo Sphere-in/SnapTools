@@ -57,9 +57,9 @@ export default function IntroPage() {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10  mx-auto px-6 pt-10 pb-2">
+      <main className="relative z-10  mx-auto px-6 pt-10">
         {/* Hero Section */}
-        <section className="text-center space-y-10 mb-20">
+        <section className="text-center space-y-10 mb-10">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,7 +96,7 @@ export default function IntroPage() {
         </section>
 
         {/* Features Section */}
-        <section className="text-center space-y-10">
+        <section className="text-center space-y-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
             Why Choose Our AI Assistant?
           </h2>

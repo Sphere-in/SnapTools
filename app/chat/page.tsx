@@ -6,7 +6,7 @@ import type React from "react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Send, ArrowLeft, Sun, Moon, Sparkles, RotateCcw, Copy, Volume2, Mic, MicOff, Plus, Settings2 } from "lucide-react"
+import { Send, ArrowLeft, Sun, Moon, Sparkles, RotateCcw, Copy, Volume2, Mic, MicOff, Plus, Settings2, Square } from "lucide-react"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -24,6 +24,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [isListening, setIsListening] = useState(false)
   const { theme, setTheme } = useTheme()
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -36,6 +37,8 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+
 
   useEffect(() => {
     if (inputRef.current) {
@@ -108,7 +111,7 @@ export default function ChatPage() {
           msg.id === messageId ? { ...msg, content: currentText, isTyping: i < words.length - 1 } : msg,
         ),
       )
-      await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 30))
+      await new Promise((resolve) => setTimeout(resolve, 5))
     }
   }
 
@@ -156,14 +159,14 @@ export default function ChatPage() {
     recognition.start()
     setIsListening(true)
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript
       setInput((prev) => (prev ? prev + " " : "") + transcript)
     }
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error)
-      setIsListening(false)
+      setIsListening(false);
     }
 
     recognition.onend = () => {
@@ -174,27 +177,51 @@ export default function ChatPage() {
 
   // For speak output or response 
   const speakText = (text: string) => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return
 
     const synth = window.speechSynthesis
-    const voices = synth.getVoices()
+    let voices = synth.getVoices()
 
-    // Try to find a female Hindi voice
-    const hindiFemaleVoice = voices.find(
-      (voice) =>
-        voice.lang === "hi-IN" &&
-        voice.name.toLowerCase().includes("female") // Not always reliable — depends on browser
-    ) || voices.find((voice) => voice.lang === "hi-IN") // Fallback to any Hindi voice
+    const speak = () => {
+      voices = synth.getVoices()
 
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = "hi-IN"
-    if (hindiFemaleVoice) {
-      utterance.voice = hindiFemaleVoice
+      const hindiFemaleVoice =
+        voices.find(
+          (voice) =>
+            voice.lang === "hi-IN" &&
+            voice.name.toLowerCase().includes("female")
+        ) || voices.find((voice) => voice.lang === "hi-IN")
+
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = "hi-IN"
+      if (hindiFemaleVoice) utterance.voice = hindiFemaleVoice
+
+      // Start speaking
+      synth.cancel()
+      synth.speak(utterance)
+      setIsSpeaking(true)
+
+      // 🔁 Reset to not speaking once speech is done
+      utterance.onend = () => {
+        console.log("Speech ended")
+        setIsSpeaking(false)
+      }
+
+      // 🛑 If there's an error, also reset
+      utterance.onerror = (e) => {
+        console.error("Speech synthesis error:", e)
+        setIsSpeaking(false)
+      }
     }
 
-    synth.cancel() // Stop any previous speech
-    synth.speak(utterance)
+    if (voices.length === 0) {
+      setTimeout(speak, 100)
+    } else {
+      speak()
+    }
   }
+
+
 
   //copy the response 
   const copyToClipboard = async (text: string) => {
@@ -236,20 +263,37 @@ export default function ChatPage() {
           message.role != "user" ?
             <div className="flex ">
               <button
-              title="Copy"
+                title="Copy"
                 onClick={() => copyToClipboard(message.content)}
                 className=" p-2 w-fit rounded-lg hover:bg-muted/90 text-slate-400">
                 <Copy className="w-4 h-4" />
 
               </button>
-              <button
-             
-                onClick={() => speakText(message.content)}
-                className="p-2 w-fit rounded-lg hover:bg-muted/90 text-slate-400 cursor-pointer"
-                title="Speak message"
-              >
-                <Volume2 className="w-4 h-4" />
-              </button>
+              {!isSpeaking ? (
+                <button
+                  onClick={() => {
+                    if (isSpeaking) return;
+                    setIsSpeaking(true);
+                    speakText(message.content)
+                  }}
+                  className="p-2 w-fit rounded-lg hover:bg-muted/90 text-slate-400 cursor-pointer"
+                  title="Speak message"
+                >
+                  <Volume2 className="w-4 h-4" />
+                </button>
+              )
+                : (
+                  <button
+                    onClick={() => {
+                      if (!isSpeaking) return;
+                      setIsSpeaking(false);
+                      window.speechSynthesis.cancel()
+                    }}
+                    className="p-2 w-fit rounded-lg hover:bg-muted/90 text-slate-400 cursor-pointer"
+                    title="Speak message">
+                    <Square className="w-4 h-4" />
+                  </button>
+                )}
 
             </div>
             :

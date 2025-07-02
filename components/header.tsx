@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Grid3X3, Menu, X } from "lucide-react"
+import { Moon, Sun, Grid3X3, Menu, X, Sparkle, Globe, Brain } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
@@ -8,9 +8,9 @@ import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 
 const navItems = [
-  { name: "Discover", path: "/" },
-  { name: "AI Tools", path: "/ai-tools" },
-  { name: "Categories", path: "/categories" },
+  { name: "Discover", path: "/", icon: <Globe height={15} width={15} /> },
+  { name: "AI Tools", path: "/ai-tools", icon: <Brain height={15} width={15} /> },
+  { name: "Try Snap AI", path: "/ai", icon: <Sparkle height={15} width={15} /> },
 ]
 
 
@@ -50,12 +50,12 @@ export function Header() {
                 <button
                   key={item.name}
                   onClick={() => router.push(item.path)}
-                  className={`text-sm font-medium transition-colors duration-200 pb-1 border-b-2 ${isActive
+                  className={`flex  gap-x-2 justify-center items-center  text-sm font-medium transition-colors duration-200 pb-1 border-b-2 ${isActive
                     ? "text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 border-transparent hover:border-gray-300 dark:hover:border-gray-600"
                     }`}
                 >
-                  {item.name}
+                  {item.name}{item.icon}
                 </button>
               )
             })}
