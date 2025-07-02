@@ -84,7 +84,7 @@ export function AIHeroSlider() {
   }
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center">
+    <div className="w-full h-[100svh] flex ">
       <div className="relative w-full overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[700px]">
         <AnimatePresence mode="wait">
           <motion.div

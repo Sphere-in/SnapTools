@@ -199,7 +199,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
   const getCategoryGradient = (category: string) => {
     const gradients = {
       image:
-        "from-purple-500/10 via-pink-500/10 to-red-500/10 dark:from-purple-400/10 dark:via-pink-400/10 dark:to-red-400/10",
+        "from-purple-500/10 via-pink-500/10 to-red-500/10 dark:from-purple-800/10 dark:via-pink-700/10 dark:to-red-500/10",
       text: "from-blue-500/10 via-cyan-500/10 to-teal-500/10 dark:from-emerald-500/10 dark:via-teal-500/10 dark:to-cyan-500/10",
       video:
         "from-orange-500/10 via-red-500/10 to-pink-500/10 dark:from-orange-400/10 dark:via-red-400/10 dark:to-pink-400/10",
@@ -270,7 +270,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
               placeholder="Search AI tools and utilities..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-14 pr-6 py-4 text-base rounded-full border-2 border-white/20 dark:border-gray-700/50 focus:border-blue-500/50 dark:focus:border-emerald-400/50 focus:ring-2 focus:ring-blue-200/50 dark:focus:ring-emerald-800/50 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg"
+              className="pl-14 pr-6 py-6 text-base rounded-full border-2 border-white/20 dark:border-gray-700/50 focus:border-blue-500/50 dark:focus:border-emerald-400/50 focus:ring-2 focus:ring-blue-200/50 dark:focus:ring-emerald-800/50 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg"
             />
           </div>
         </motion.div>
@@ -279,7 +279,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="w-full overflow-x-auto scrollbar-hide p-2 flex xl:justify-center gap-3"
+          className="w-full overflow-x-auto scrollbar-hide p-4 flex xl:justify-center gap-3"
         >
           {categories.map((category) => (
             <motion.button
@@ -314,7 +314,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{
-                delay: toolIndex * 0.05,
+              
                 type: "tween",
                 duration: 0.3,
                 ease: "easeOut",
@@ -326,7 +326,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
               className="group"
             >
               <Card
-                className={`cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-emerald-400/20 border-0 rounded-3xl overflow-hidden bg-gradient-to-br ${getCategoryGradient(tool.category)} backdrop-blur-sm relative`}
+                className={`cursor-pointer transition-all  border-0 hover:border border-slate-500 rounded-3xl overflow-hidden bg-gradient-to-tr ${getCategoryGradient(tool.category)} backdrop-blur-sm relative`}
                 onClick={() => {
                   if (tool.id === "snap-ai") {
                     router.push("/ai")
@@ -384,7 +384,7 @@ export function ToolGrid({ filter = "all", selectedCategory }: ToolGridProps) {
                     {tool.name}
                   </CardTitle>
 
-                  <CardDescription className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed mb-6">
+                  <CardDescription className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap leading-relaxed mb-6">
                     {tool.description}
                   </CardDescription>
 

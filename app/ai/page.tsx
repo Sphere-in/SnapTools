@@ -24,7 +24,7 @@ export default function IntroPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10 relative overflow-hidden">
+    <div className=" bg-gradient-to-br from-background via-background to-accent/10 relative overflow-hidden">
       {/* Animated Background Circles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-32 -left-20 w-96 h-96 bg-purple-500/20 blur-[120px] rounded-full animate-pulse" />
@@ -57,7 +57,7 @@ export default function IntroPage() {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 container mx-auto px-6 pt-10 pb-24">
+      <main className="relative z-10  mx-auto px-6 pt-10 pb-2">
         {/* Hero Section */}
         <section className="text-center space-y-10 mb-20">
           <motion.div

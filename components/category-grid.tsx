@@ -121,7 +121,7 @@ export function CategoryGrid({ showAll = false, onCategorySelect }: CategoryGrid
               whileTap={{ scale: 0.95 }}
               onClick={() => handleCategoryClick(category.id)}
               className={`
-                relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300
+                relative p-6 rounded-3xl border-2 cursor-pointer transition-all 
                 ${category.color}
                 shadow-sm hover:shadow-md
               `}

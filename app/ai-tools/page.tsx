@@ -25,7 +25,7 @@ export default function AIToolsPage() {
       <div className="pt-20">
         {/* Hero Section */}
         <section className="mx-2 sm:mx-4 lg:mx-6  mb-6 sm:mb-8 lg:mb-12">
-          <div className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 dark:from-purple-800 dark:via-blue-800 dark:to-indigo-900 text-white">
+          <div className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-12 rounded-xl sm:rounded-3xl bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 dark:from-purple-800 dark:via-blue-800 dark:to-indigo-900 text-white">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

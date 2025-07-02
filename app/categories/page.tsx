@@ -10,7 +10,7 @@ export default function CategoriesPage() {
       <Header />
       <div className="pt-20">
         {/* Hero Section */}
-        <section className="mx-2 sm:mx-4 lg:mx-6 mb-6 sm:mb-8 rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30">
+        <section className="mx-2 sm:mx-4 lg:mx-6 mb-6 sm:mb-8 rounded-3xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30">
           <div className="mx-auto px-4 text-center py-8 sm:py-12 md:py-16 lg:py-20 sm:px-6 md:px-8 lg:px-12 rounded-xl sm:rounded-2xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
