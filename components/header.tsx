@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-
+import Image from "next/image"
 const navItems = [
   { name: "Discover", path: "/", icon: <Globe height={15} width={15} /> },
   { name: "AI Tools", path: "/ai-tools", icon: <Brain height={15} width={15} /> },
@@ -32,14 +32,19 @@ export function Header() {
             className="flex items-center space-x-3"
           >
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+              {/* <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-sm">AI</span>
-              </div>
-              <div>
+              </div> */}
+              <Image
+                src="/logo.png"
+                alt="Snap Tools Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 "
+              />
                 <span className="font-bold text-gray-900 dark:text-white text-lg">Snap Tools</span>
                 <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">AI Powered</div>
               </div>
-            </div>
           </motion.div>
 
           {/* Navigation */}
