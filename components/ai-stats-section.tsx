@@ -2,30 +2,31 @@ import { Users, Zap, Shield, Star } from "lucide-react"
 
 const stats = [
   {
-    icon: Users,
-    value: "100K+",
-    label: "Active Users",
-    description: "Trusted by professionals worldwide",
+    icon: Shield,
+    value: "256-bit",
+    label: "Encrypted",
+    description: "Secure data transfers",
   },
   {
     icon: Zap,
-    value: "50+",
-    label: "AI Tools",
-    description: "Powerful tools at your fingertips",
-  },
-  {
-    icon: Shield,
-    value: "99.9%",
-    label: "Uptime",
-    description: "Reliable and always available",
+    value: "1M+",
+    label: "Daily Requests",
+    description: "Scalable API infra",
   },
   {
     icon: Star,
-    value: "4.9",
-    label: "User Rating",
-    description: "Loved by our community",
+    value: "99.99%",
+    label: "Uptime",
+    description: "Always online",
+  },
+  {
+    icon: Users,
+    value: "GDPR",
+    label: "Compliant",
+    description: "Meets key standards",
   },
 ]
+
 
 export function AIStatsSection() {
   return (
