@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Play, Pause, Sparkles, Zap, Star, ArrowRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import { tools } from "@/lib/tools-config"
+import { useRouter } from "next/navigation"
 
 // Featured AI tools
 const featuredTools = [
@@ -20,6 +21,7 @@ const featuredTools = [
     tool: tools.find((t) => t.id === "snap-ai"),
     features: ["Smart Automation", "Natural Language", "Real-time Results"],
     badge: "Most Popular",
+    link: "/ai"
   },
   {
     id: "qr-generator",
@@ -32,6 +34,7 @@ const featuredTools = [
     tool: tools.find((t) => t.id === "qr-generator"),
     features: ["Custom Designs", "High Resolution", "Batch Generation"],
     badge: "New",
+    link: "/ai-tools"
   },
   {
     id: "json-formatter",
@@ -44,6 +47,7 @@ const featuredTools = [
     tool: tools.find((t) => t.id === "json-formatter"),
     features: ["Error Detection", "Auto-complete", "Schema Validation"],
     badge: "Enhanced",
+    link: "/ai-tools"
   },
   {
     id: "password-generator",
@@ -56,10 +60,12 @@ const featuredTools = [
     tool: tools.find((t) => t.id === "password-generator"),
     features: ["Military Grade", "Custom Rules", "Strength Analysis"],
     badge: "Secure",
+    link: "/ai-tools"
   },
 ]
 
 export function AIHeroSlider() {
+  const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
 
@@ -191,6 +197,7 @@ export function AIHeroSlider() {
                     >
                       <Button
                         size="lg"
+                        onClick={() => router.push(currentTool.link)}
                         className="w-full sm:w-auto bg-white text-gray-900 hover:bg-white/90 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 group"
                       >
                         {currentTool.cta}
@@ -199,6 +206,7 @@ export function AIHeroSlider() {
                       <Button
                         variant="outline"
                         size="lg"
+                        onClick={() => router.push("/ai-tools")}
                         className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold backdrop-blur-sm bg-transparent"
                       >
                         View All Tools
@@ -265,9 +273,8 @@ export function AIHeroSlider() {
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`rounded-full transition-all duration-300 flex-shrink-0 ${
-                    index === currentSlide ? "bg-white w-6 sm:w-8 h-2" : "bg-white/50 w-2 h-2 hover:bg-white/70"
-                  }`}
+                  className={`rounded-full transition-all duration-300 flex-shrink-0 ${index === currentSlide ? "bg-white w-6 sm:w-8 h-2" : "bg-white/50 w-2 h-2 hover:bg-white/70"
+                    }`}
                 />
               ))}
             </div>
