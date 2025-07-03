@@ -237,7 +237,7 @@ export default function ChatPage() {
   const MessageBubble = ({ message }: { message: Message }) => (
     <div
       className={cn(
-        "flex  rounded-3xl gap-4 p-6 group transition-all duration-300 hover:bg-accent/10",
+        "flex  rounded-3xl gap-4 p-6 group transition-all duration-300 hover:bg-accent/10 overflow-x-hidden",
         message.role === "user" ? "flex-row-reverse" : "flex-row",
       )}
     >
@@ -251,8 +251,8 @@ export default function ChatPage() {
           </span>
 
         </div>
-        <div className={cn("relative py-2.5 px-6 rounded-3xl w-fit  transition-all duration-200 border-transparent", message.role === "user" ? "bg-muted/35  ml-auto" : "bg-purple-500/5 ")}>
-          <div className="text-sm leading-relaxed whitespace-pre-wrap">
+        <div className={cn("relative py-2.5 px-6 rounded-3xl w-fit max-w-full sm:max-w-[75%] lg:max-w-[85%] transition-all duration-200 border-transparent", message.role === "user" ? "bg-muted/35  ml-auto" : "bg-purple-500/5 ")}>
+          <div className="text-sm leading-relaxed whitespace-pre-wrap break-words overflow-wrap break-word">
             <ReactMarkdown>
               {message.content}
             </ReactMarkdown>
