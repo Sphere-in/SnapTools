@@ -15,6 +15,8 @@ import { Base64Tool } from "@/components/tools/base64-tool"
 import { HashGenerator } from "@/components/tools/hash-generator"
 import { TextDiff } from "@/components/tools/text-diff"
 import { Calculator } from "@/components/tools/calculator"
+import MarkdownPreviewer from "./tools/MarkdownPreviewer"
+import Codebeautifierminifier from "./tools/CodebeautifierMinifier"
 
 interface ToolDialogProps {
   toolId: string | null
@@ -32,7 +34,9 @@ const toolComponents: Record<string, React.ComponentType> = {
   "base64-tool": Base64Tool,
   "hash-generator": HashGenerator,
   "text-diff": TextDiff,
-  calculator: Calculator,
+  "calculator": Calculator,
+  "markdown-previewer": MarkdownPreviewer,
+  "code-beautifier-minifier": Codebeautifierminifier
 }
 
 export function ToolDialog({ toolId, onClose }: ToolDialogProps) {

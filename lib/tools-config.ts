@@ -11,6 +11,7 @@ import {
   GitCompare,
   Ruler,
   Brain,
+  FileCode,
 } from "lucide-react";
 
 export const tools = [
@@ -97,5 +98,19 @@ export const tools = [
     description: "Advanced calculator with scientific functions",
     category: "Math Tools",
     icon: CalcIcon,
+  },
+  {
+    id: "markdown-previewer",
+    name: "Markdown Previewer",
+    description: "Write text using Markdown syntax",
+    category: "Utilities",
+    icon: FileCode,
+  },
+  {
+    id: "code-beautifier-minifier",
+    name: "Code Beautifier & Minifier",
+    description: "A Minifier removes all unnecessary characters from code",
+    category: "Developer Tools",
+    icon: ScanLine,
   },
 ];
