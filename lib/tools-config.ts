@@ -12,6 +12,7 @@ import {
   Ruler,
   Brain,
   FileCode,
+  ImagePlay
 } from "lucide-react";
 
 export const tools = [
@@ -112,5 +113,12 @@ export const tools = [
     description: "A Minifier removes all unnecessary characters from code",
     category: "Developer Tools",
     icon: ScanLine,
+  },
+  {
+    id: "image-generator",
+    name: "Image Generator",
+    description: "Generate images from text prompts using AI",
+    category: "AI Tools",
+    icon: ImagePlay,
   },
 ];

@@ -17,7 +17,7 @@ import { TextDiff } from "@/components/tools/text-diff"
 import { Calculator } from "@/components/tools/calculator"
 import MarkdownPreviewer from "./tools/MarkdownPreviewer"
 import Codebeautifierminifier from "./tools/CodebeautifierMinifier"
-
+import { ImageGenerator } from "./tools/ImageGenerator"
 interface ToolDialogProps {
   toolId: string | null
   onClose: () => void
@@ -36,7 +36,8 @@ const toolComponents: Record<string, React.ComponentType> = {
   "text-diff": TextDiff,
   "calculator": Calculator,
   "markdown-previewer": MarkdownPreviewer,
-  "code-beautifier-minifier": Codebeautifierminifier
+  "code-beautifier-minifier": Codebeautifierminifier,
+  "image-generator": ImageGenerator
 }
 
 export function ToolDialog({ toolId, onClose }: ToolDialogProps) {
