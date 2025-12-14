@@ -82,7 +82,7 @@ export default function ChatPage() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.HF_TOKEN}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_HF_TOKEN}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
