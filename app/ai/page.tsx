@@ -42,7 +42,7 @@ export default function IntroPage() {
             <h1 className="text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
               Snap AI
             </h1>
-            <p className="text-sm text-muted-foreground">Powered by Gemini AI</p>
+            <p className="text-sm text-muted-foreground">Powered by DeepSeek AI</p>
           </div>
         </div>
         <Button
@@ -105,7 +105,7 @@ export default function IntroPage() {
               {
                 icon: <Rocket className="h-8 w-8" />,
                 title: "Lightning Fast",
-                description: "Instant responses powered by Gemini AI.",
+                description: "Instant responses powered by DeepSeek AI.",
               },
               {
                 icon: <Shield className="h-8 w-8" />,

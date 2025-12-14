@@ -11,6 +11,7 @@ import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
+
 interface Message {
   id: string
   content: string
@@ -77,22 +78,55 @@ export default function ChatPage() {
 
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
+        "https://router.huggingface.co/v1/chat/completions",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${process.env.HF_TOKEN}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: userMessage }] }],
+            model: "deepseek-ai/DeepSeek-V3.2:novita",
+            messages: [
+              {
+                role: "user",
+                content: `Answer in max 300 characters only: ${userMessage}`,
+              },
+            ],
           }),
-        },
-      )
+        }
+      );
+    
+      const data = await res.json();
+    console.log(`Data : ${data}`)
+    const responseText =
+    data?.choices?.[0]?.message?.content ||
+    "Sorry, I couldn't generate a response.";
+    
+    console.log(`responseText : ${responseText}`)
+      await animateTyping(aiMessageId, responseText);
+    }
+    
+    
+    // try {
+    //   const res = await fetch(
+    //     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
+    //     {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify({
+    //         contents: [{ parts: [{ text: userMessage }] }],
+    //       }),
+    //     },
+    //   )
 
-      const data = await res.json()
-      const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Sorry, I couldn't generate a response."
+    //   const data = await res.json()
+    //   const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text ||
+    //     "Sorry, I couldn't generate a response."
 
-      await animateTyping(aiMessageId, responseText)
-    } catch (error) {
+    //   await animateTyping(aiMessageId, responseText)
+    // }
+     catch (error) {
       console.error("Error getting AI response:", error)
       await animateTyping(aiMessageId, "Sorry, there was an error processing your request.")
     }
@@ -317,7 +351,7 @@ export default function ChatPage() {
               </div>
               <div>
                 <h1 className="text-lg font-semibold">Snap AI</h1>
-                <p className="text-xs text-muted-foreground">Powered by Gemini</p>
+                <p className="text-xs text-muted-foreground">Powered by Deepseek</p>
               </div>
             </div>
           </div>
@@ -351,7 +385,7 @@ export default function ChatPage() {
                     Welcome to <span className="text-purple-500">Snap AI</span>
                   </h2>
                   <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                    Get answers, brainstorm ideas, write faster, or just chat. I’m your AI companion — powered by Gemini.
+                    Get answers, brainstorm ideas, write faster, or just chat. I’m your AI companion — powered by DeepSeek.
                   </p>
                 </div>
 

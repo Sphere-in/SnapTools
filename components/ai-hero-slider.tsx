@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Play, Pause, Sparkles, Zap, Star, ArrowRight
 import { useState, useEffect } from "react"
 import { tools } from "@/lib/tools-config"
 import { useRouter } from "next/navigation"
-
+import { ToolDialog } from "./tool-dialog"
 // Featured AI tools
 const featuredTools = [
   {
@@ -23,6 +23,20 @@ const featuredTools = [
     badge: "Most Popular",
     link: "/ai"
   },
+  {
+    id: "snap-ai-image",
+    title: "Snap AI Image Generator",
+    subtitle: "Turn your imagination into real with words",
+    description: "Use AI to make your dream world real",
+    cta: "Try AI Image Generator",
+    background: "bg-gradient-to-br from-fuchsia-600 via-purple-600 to-indigo-700 dark:from-fuchsia-800 dark:via-purple-800 dark:to-indigo-900",
+    tool: tools.find((t) => t.id === "image-generator"),
+    features: ["Smart Automation", "Natural Language", "Real-time Results"],
+    badge: "Most Popular",
+    link: "/tools/image-generator", 
+    dialogToolId: "image-generator"      
+  }
+  ,
   {
     id: "qr-generator",
     title: "AI-Powered QR Generator",
@@ -68,6 +82,7 @@ export function AIHeroSlider() {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
+  const [openTool, setOpenTool] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isPlaying) return
@@ -197,9 +212,17 @@ export function AIHeroSlider() {
                     >
                       <Button
                         size="lg"
-                        onClick={() => router.push(currentTool.link)}
                         className="w-full sm:w-auto bg-white text-gray-900 hover:bg-white/90 rounded-full px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 group"
+
+                        onClick={() => {
+                          if (currentTool.dialogToolId) {
+                            setOpenTool(currentTool.dialogToolId)
+                          } else {
+                            router.push(currentTool.link)
+                          }
+                        }}
                       >
+
                         {currentTool.cta}
                         <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                       </Button>
@@ -308,6 +331,13 @@ export function AIHeroSlider() {
           </div>
         </div>
       </div>
+      {openTool && (
+        <ToolDialog
+          toolId={openTool}
+          onClose={() => setOpenTool(null)}
+        />
+      )}
+
     </div>
   )
 }
